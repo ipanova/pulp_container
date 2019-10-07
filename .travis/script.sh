@@ -103,7 +103,7 @@ fi
 PULP_API_POD=$(sudo kubectl get pods | grep -E -o "pulp-api-(\w+)-(\w+)")
 export CMD_PREFIX="sudo kubectl exec $PULP_API_POD --"
 # Many tests require pytest/mock, but users do not need them at runtime
-# (or to add plugins on top of pulpcore or pulp container images.)
+# (or to add plugins on top of pulpcore or pulp docker images.)
 # So install it here, rather than in the image Dockerfile.
 # This has to be done after wait_for_pulp (although not at the very end of it.)
 $CMD_PREFIX pip3 install pytest mock
@@ -114,7 +114,7 @@ $CMD_PREFIX dnf install -yq lsof which dnf-plugins-core
 
 # Run unit tests.
 $CMD_PREFIX bash -c "sed \"s/'USER': 'pulp'/'USER': 'postgres'/g\" /etc/pulp/settings.py > unit-test.py"
-$CMD_PREFIX bash -c "PULP_SETTINGS=/unit-test.py django-admin test  --noinput /usr/local/lib/python${TRAVIS_PYTHON_VERSION}/site-packages/pulp_docker/tests/unit/"
+$CMD_PREFIX bash -c "PULP_SETTINGS=/unit-test.py django-admin test  --noinput /usr/local/lib/python${TRAVIS_PYTHON_VERSION}/site-packages/pulp_container/tests/unit/"
 
 # Note: This function is in the process of being merged into after_failure
 show_logs_and_return_non_zero() {
@@ -132,7 +132,7 @@ set -u
 if [ -f $FUNC_TEST_SCRIPT ]; then
     $FUNC_TEST_SCRIPT
 else
-    pytest -v -r sx --color=yes --pyargs pulp_docker.tests.functional || show_logs_and_return_non_zero
+    pytest -v -r sx --color=yes --pyargs pulp_container.tests.functional || show_logs_and_return_non_zero
 fi
 
 if [ -f $POST_SCRIPT ]; then
