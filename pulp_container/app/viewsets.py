@@ -34,7 +34,7 @@ from pulpcore.plugin.viewsets import (
     OperationPostponedResponse,
 )
 
-from pulp_container.app import models, serializers, tasks
+from pulp_container.app import access_policy, models, serializers, tasks
 
 
 log = logging.getLogger(__name__)
@@ -586,7 +586,7 @@ class ContainerDistributionViewSet(BaseDistributionViewSet):
     queryset = models.ContainerDistribution.objects.all()
     serializer_class = serializers.ContainerDistributionSerializer
     filterset_class = ContainerDistributionFilter
-    permission_classes = (AccessPolicyFromDB,)
+    permission_classes = (access_policy.DistributionAccessPolicyFromDB,)
     queryset_filtering_required_permission = "container.view_containerdistribution"
 
     DEFAULT_ACCESS_POLICY = {
