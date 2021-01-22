@@ -36,6 +36,7 @@ from pulp_container.app import models, serializers
 from pulp_container.app.authorization import AuthorizationService
 from pulp_container.app.redirects import FileStorageRedirects, S3StorageRedirects
 from pulp_container.app.token_verification import TokenAuthentication, TokenPermission
+from pulp_container.app.utils import get_accepted_media_types
 
 
 log = logging.getLogger(__name__)
