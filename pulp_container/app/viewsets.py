@@ -274,7 +274,7 @@ class ContainerRepositoryViewSet(TagOperationsMixin, RepositoryViewSet):
     endpoint_name = "container"
     queryset = models.ContainerRepository.objects.all()
     serializer_class = serializers.ContainerRepositorySerializer
-    permission_classes = (AccessPolicyFromDB,)
+    permission_classes = (ContainerRepoAccessPolicyFromDB,)
     queryset_filtering_required_permission = "container.view_containerrepository"
     DEFAULT_ACCESS_POLICY = {
         "statements": [
@@ -317,7 +317,7 @@ class ContainerRepositoryViewSet(TagOperationsMixin, RepositoryViewSet):
                 ],
             },
             {
-                "action": ["add", "remove", "tag", "untag", "copy_tags", "copy_manifests"],
+                "action": ["remove", "tag", "untag"],
                 "principal": "authenticated",
                 "effect": "allow",
                 "condition": [
@@ -325,11 +325,31 @@ class ContainerRepositoryViewSet(TagOperationsMixin, RepositoryViewSet):
                 ],
             },
             {
+                "action": ["add"],
+                "principal": "authenticated",
+                "effect": "allow",
+                "condition": [
+                    "has_model_or_obj_perms:container.modify_content_containerrepository",
+                    "has_content_param_model_or_obj_perms",
+                ],
+            },
+            {
+                "action": ["copy_tags", "copy_manifests"],
+                "principal": "authenticated",
+                "effect": "allow",
+                "condition": [
+                    "has_model_or_obj_perms:container.modify_content_containerrepository",
+                    "has_source_param_model_or_obj_perms:container.view_containerrepository"
+                ],
+            },
+
+            {
                 "action": ["build_image"],
                 "principal": "authenticated",
                 "effect": "allow",
                 "condition": [
                     "has_model_or_obj_perms:container.build_image_containerrepository",
+                    # "has_artifacts_param_model_or_obj_perms"
                 ],
             },
         ],
@@ -596,6 +616,7 @@ class ContainerPushRepositoryViewSet(TagOperationsMixin, ReadOnlyRepositoryViewS
                 "parameters": None,
                 "permissions": [
                     "container.view_containerpushrepository",
+                    "container.modify_content_containerrepository",
                 ],
             },
         ],

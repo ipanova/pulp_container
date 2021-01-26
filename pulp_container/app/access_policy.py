@@ -2,7 +2,6 @@ from pulpcore.plugin.access_policy import AccessPolicyFromDB
 
 from pulp_container.app import models
 
-
 class NamespacePermissionsChecker:
     """
     A class that contains a function which checks permissions required for modifying namespaces.
