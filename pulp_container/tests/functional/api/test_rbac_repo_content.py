@@ -51,6 +51,7 @@ class ContainerContentTestCase(unittest.TestCase, rbac_base.BaseRegistryTest):
 
         admin_user, admin_password = cfg.pulp_auth
         cls.user_admin = {"username": admin_user, "password": admin_password}
+        cls.tags_count = cls.tags_api.list().count
         cls.user_creator = gen_user(
             [
                 "container.add_containerrepository",
@@ -122,6 +123,7 @@ class ContainerContentTestCase(unittest.TestCase, rbac_base.BaseRegistryTest):
         """
         Test that users can list content if they have enough rights
         """
+        self.assertEqual(self.tags_count, 0)
         push_repository_rv = self.pushrepository_api.read(
             self.push_repository.pulp_href
         ).latest_version_href
