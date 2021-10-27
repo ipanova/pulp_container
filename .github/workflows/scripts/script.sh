@@ -112,7 +112,7 @@ fi
 if [ -f $FUNC_TEST_SCRIPT ]; then
   source $FUNC_TEST_SCRIPT
 else
-    pytest -v -r sx --color=yes --pyargs pulp_container.tests.functional
+    pytest -v -r sx --color=yes --pyargs pulp_container.tests.functional.api.test_rbac_repo_content
 fi
 pushd ../pulp-cli
 pytest -v -m pulp_container
