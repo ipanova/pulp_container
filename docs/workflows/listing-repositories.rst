@@ -1,4 +1,4 @@
-Listing Repositories
+Listing Repositories via Pulp registry API
 ====================
 
 A registry may contain several repositories which hold collections of multiple images. Each

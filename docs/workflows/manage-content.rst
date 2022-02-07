@@ -333,3 +333,9 @@ New Repository Version::
    }
 
 Reference: `Container Copy Manifests Usage <../restapi.html#operation/repositories_container_container_copy_manifests>`_
+
+Manage Container Content in a Push Repository
+=============================================
+
+Tag/Untag
+remove image/signatures

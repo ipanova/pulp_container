@@ -28,6 +28,7 @@ Features
 * Host content either `locally or on S3 <https://docs.pulpproject.org/installation/storage.html>`_
 * De-duplication of all saved content
 * Support disconnected and air-gapped environments with pulp import/export facility for synced container repositories
+* signing
 
 Tech Preview
 ------------

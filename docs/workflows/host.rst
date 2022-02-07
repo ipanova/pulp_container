@@ -114,6 +114,7 @@ Docker Output::
 .. note::
     When using a container client that cannot handle requested manifests in the new format
     (schema 2), the manifests are rewritten into the old format (schema 1) on-the-fly by Pulp.
-    In general, the automatic conversion cannot be performed when the content is not available
-    in the storage. Therefore, it may be successful only if the content was previously synced
-    with the ``immediate`` policy.
+
+Mention pulp registry follow v2 specs api
+Explain registry_path
+Explain pushed content is available for hosting right away after it was pushed.

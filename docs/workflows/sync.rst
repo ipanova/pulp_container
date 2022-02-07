@@ -57,6 +57,7 @@ Remote GET Response::
        "ssl_validation": true,
        "upstream_name": "library/hello-world",
        "url": "https://registry-1.docker.io",
+       "sigstore_url":
        "include_tags": null,
        "exclude_tags": null
    }
@@ -76,6 +77,8 @@ the ``sigstore`` field when creating a Remote.
     Pulp will automatically sync signatures provided via the docker API extension. At the moment,
     `cosign` signatures are not supported.
 
+It is possible to configure to sync only signed content.
+Mention possibility to sign content from within pulp.
 
 Reference: `Container Remote Usage <../restapi.html#tag/Remotes:-Container>`_
 
@@ -99,6 +102,9 @@ sync with. You are telling pulp to fetch content from the remote and add to the 
 
 .. note::
    It is not posible to push content to a repository that has been used to mirror content.
+
+.. note::
+   on_demand sync to save some space/bandwith
 
 
 Reference: `Container Sync Usage <../restapi.html#operation/repositories_container_container_sync>`_
@@ -164,3 +170,12 @@ Reference: `Container Repository Version API Usage
 
     To set up a regular sync task, use one of the external tools that deal with periodic background jobs.
     Learn more about scheduling tasks `here <https://docs.pulpproject.org/pulpcore/workflows/scheduling-tasks.html>`_.
+
+
+Repo version retention - reference to concepts
+
+Associate remote to the repo
+============================
+
+Repo version rollback
+=====================

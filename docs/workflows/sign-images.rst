@@ -337,3 +337,6 @@ issue the following command to push a tagged image altogether with its signature
 Registry::
 
     $ podman push --tls-verify=false --sign-by username@email.com localhost:24817/<namespace>/<name>
+
+Signing policy config
+=====================

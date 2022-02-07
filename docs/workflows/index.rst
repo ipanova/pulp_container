@@ -51,6 +51,7 @@ Container Workflows
 .. toctree::
    :maxdepth: 2
 
+   concepts
    sync
    host
    listing-repositories
@@ -60,3 +61,4 @@ Container Workflows
    managing-credentials
    push
    sign-images
+   import/export

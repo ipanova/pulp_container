@@ -57,3 +57,10 @@ pushing a tagged image.
    to create the local filesystem. Push creates an uncompressed tarball from the local filesystem and recompresses it during upload.
    The recompression is not at all guaranteed to be reproducible, it is client implementation dependent — push with different
    compression implementation than the original author used is more likely to result in a different blob digest.
+
+Auto creation of repo, distribution, namespace.
+Explain repo name 'library' 'library/busybox'
+Mention pulp registry follow v2 specs api
+Container plugin supports both Docker and OCI media types
+
+Push of signatures, reference to signing section
