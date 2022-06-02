@@ -53,3 +53,5 @@ descriptions of all the fields and how they are used.
    * - Tags
      - For searching. Select 0 or many, best judgement.
        If an issue requires a functional test. Add the tag `Functional test`.
+
+https://docs.google.com/presentation/d/1d1QToXMD84OIipdEPPR8dLd3nVaz8lGkeo1DHKFgW1Q/edit#slide=id.p1
