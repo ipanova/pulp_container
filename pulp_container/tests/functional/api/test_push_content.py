@@ -1,8 +1,10 @@
 """Tests that verify that images can be pushed to Pulp."""
+import json
 import pytest
+import requests
 import unittest
 
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urljoin
 
 from pulp_smash import cli, config, exceptions
 from pulp_smash.pulp3.bindings import (
@@ -17,6 +19,7 @@ from pulp_container.tests.functional.api import rbac_base
 from pulp_container.tests.functional.constants import REGISTRY_V2_REPO_PULP
 from pulp_container.tests.functional.utils import (
     gen_container_client,
+    get_auth_for_url,
 )
 
 from pulpcore.client.pulp_container import (
@@ -363,12 +366,12 @@ class PushManifestListTestCase(PulpTestCase, rbac_base.BaseRegistryTest):
     @classmethod
     def setUpClass(cls):
         """Initialize a new manifest list that will be pushed to the registry."""
-        cfg = config.get_config()
-        cls.registry = cli.RegistryClient(cfg)
+        cls.cfg = config.get_config()
+        cls.registry = cli.RegistryClient(cls.cfg)
         cls.registry.raise_if_unsupported(unittest.SkipTest, "Tests require podman/docker")
-        cls.registry_name = urlparse(cfg.get_base_url()).netloc
+        cls.registry_name = urlparse(cls.cfg.get_base_url()).netloc
 
-        admin_user, admin_password = cfg.pulp_auth
+        admin_user, admin_password = cls.cfg.pulp_auth
         cls.user_admin = {"username": admin_user, "password": admin_password}
 
         api_client = gen_container_client()
@@ -390,9 +393,7 @@ class PushManifestListTestCase(PulpTestCase, rbac_base.BaseRegistryTest):
         manifest_a_digest = cls.registry.inspect(cls.manifest_a)[0]["Digest"]
         manifest_b_digest = cls.registry.inspect(cls.manifest_b)[0]["Digest"]
         manifest_c_digest = cls.registry.inspect(cls.manifest_c)[0]["Digest"]
-        cls.manifests_v2s2_digests = sorted(
-            [manifest_a_digest, manifest_b_digest, manifest_c_digest]
-        )
+        cls.manifests_v2s2_digests = set([manifest_a_digest, manifest_b_digest, manifest_c_digest])
 
         # create a new manifest list composed of the pulled manifest images
         cls.image_v2s2_tag = "manifest_list"
@@ -421,9 +422,7 @@ class PushManifestListTestCase(PulpTestCase, rbac_base.BaseRegistryTest):
         manifest_a_digest = cls.registry.inspect("manifest_a.tar")[0]["Digest"]
         manifest_b_digest = cls.registry.inspect("manifest_b.tar")[0]["Digest"]
         manifest_c_digest = cls.registry.inspect("manifest_c.tar")[0]["Digest"]
-        cls.manifests_oci_digests = sorted(
-            [manifest_a_digest, manifest_b_digest, manifest_c_digest]
-        )
+        cls.manifests_oci_digests = set([manifest_a_digest, manifest_b_digest, manifest_c_digest])
 
         # create an empty manifest list
         cls.empty_image_tag = "empty_manifest_list"
@@ -484,7 +483,7 @@ class PushManifestListTestCase(PulpTestCase, rbac_base.BaseRegistryTest):
         assert manifest_list.media_type == MEDIA_TYPE.MANIFEST_LIST
         assert manifest_list.schema_version == 2
 
-        referenced_manifests_digests = sorted(
+        referenced_manifests_digests = set(
             [
                 self.manifests_api.read(manifest_href).digest
                 for manifest_href in manifest_list.listed_manifests
@@ -518,7 +517,19 @@ class PushManifestListTestCase(PulpTestCase, rbac_base.BaseRegistryTest):
         assert manifest_list.media_type == MEDIA_TYPE.INDEX_OCI
         assert manifest_list.schema_version == 2
 
-        referenced_manifests_digests = sorted(
+        image_path = "/v2/{}/manifests/{}".format(distribution.base_path, latest_tag.name)
+        latest_image_url = urljoin(self.cfg.get_base_url(), image_path)
+
+        auth = get_auth_for_url(latest_image_url)
+        content_response = requests.get(
+            latest_image_url, auth=auth, headers={"Accept": MEDIA_TYPE.INDEX_OCI}
+        )
+        content_response.raise_for_status()
+        ml_json = json.loads(content_response.content)
+        manifests = ml_json.get("manifests")
+        self.manifests_oci_digests = set([manifest["digest"] for manifest in manifests])
+
+        referenced_manifests_digests = set(
             [
                 self.manifests_api.read(manifest_href).digest
                 for manifest_href in manifest_list.listed_manifests
