@@ -4,7 +4,7 @@
 # generated with plugin_template@2021.08.26-135-gf245075
 
 additional_repos: []
-aiohttp_fixtures_origin: 172.18.0.1
+aiohttp_fixtures_origin: 172.0.0.1
 all: false
 api_root: /pulp/
 black: true
