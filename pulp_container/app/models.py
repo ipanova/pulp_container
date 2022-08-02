@@ -19,6 +19,7 @@ from pulpcore.plugin.models import (
     BaseModel,
     Content,
     Remote,
+    RemoteConfig,
     Repository,
     Distribution,
     SigningService,
@@ -256,6 +257,18 @@ class ContainerNamespace(BaseModel, AutoAddObjPermsMixin):
             (
                 "manage_roles_containernamespace",
                 "Can manage role assignments on container namespace",
+            ),
+        ]
+
+class ContainerRemoteConfig(RemoteConfig, AutoAddObjPermsMixin):
+    TYPE = "container"
+
+    class Meta:
+        default_related_name = "%(app_label)s_%(model_name)s"
+        permissions = [
+            (
+                "manage_roles_containerremoteconfig",
+                "Can manage role assignments on container remote config",
             ),
         ]
 

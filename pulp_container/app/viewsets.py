@@ -33,6 +33,7 @@ from pulpcore.plugin.viewsets import (
     ReadOnlyContentViewSet,
     ReadOnlyRepositoryViewSet,
     RemoteViewSet,
+    RemoteConfigViewSet,
     RepositoryViewSet,
     RepositoryVersionViewSet,
     RolesMixin,
@@ -342,6 +343,87 @@ class ManifestSignatureViewSet(ContainerContentQuerySetMixin, ReadOnlyContentVie
                 "mirror_perm": "container.view_containerrepository",
             },
         },
+    }
+
+
+class ContainerRemoteConfigViewSet(RemoteConfigViewSet, RolesMixin):
+    """
+    Container remotes represent an external repository that implements the Container
+    Registry API. Container remotes support deferred downloading by configuring
+    the ``policy`` field.  ``on_demand`` and ``streamed`` policies can provide
+    significant disk space savings.
+    """
+
+    endpoint_name = "container"
+    queryset = models.ContainerRemoteConfig.objects.all()
+    serializer_class = serializers.ContainerRemoteConfigSerializer
+    queryset_filtering_required_permission = "container.view_containerremoteconfig"
+
+    DEFAULT_ACCESS_POLICY = {
+        "statements": [
+            {
+                "action": ["list", "my_permissions"],
+                "principal": "authenticated",
+                "effect": "allow",
+            },
+            {
+                "action": ["create"],
+                "principal": "authenticated",
+                "effect": "allow",
+                "condition": "has_model_perms:container.add_containerremoteconfig",
+            },
+            {
+                "action": ["retrieve"],
+                "principal": "authenticated",
+                "effect": "allow",
+                "condition": "has_model_or_obj_perms:container.view_containerremoteconfig",
+            },
+            {
+                "action": ["update", "partial_update"],
+                "principal": "authenticated",
+                "effect": "allow",
+                "condition": [
+                    "has_model_or_obj_perms:container.change_containerremoteconfig",
+                    "has_model_or_obj_perms:container.view_containerremoteconfig",
+                ],
+            },
+            {
+                "action": ["destroy"],
+                "principal": "authenticated",
+                "effect": "allow",
+                "condition": [
+                    "has_model_or_obj_perms:container.delete_containerremoteconfig",
+                    "has_model_or_obj_perms:container.view_containerremoteconfig",
+                ],
+            },
+            {
+                "action": ["list_roles", "add_role", "remove_role"],
+                "principal": "authenticated",
+                "effect": "allow",
+                "condition": ["has_model_or_obj_perms:container.manage_roles_containerremoteconfig"],
+            },
+        ],
+        "creation_hooks": [
+            {
+                "function": "add_roles_for_object_creator",
+                "parameters": {"roles": "container.containerremoteconfig_owner"},
+            },
+        ],
+        "queryset_scoping": {"function": "scope_queryset"},
+    }
+    LOCKED_ROLES = {
+        "container.containerremoteconfig_creator": [
+            "container.add_containerremoteconfig",
+        ],
+        "container.containerremoteconfig_owner": [
+            "container.view_containerremoteconfig",
+            "container.change_containerremoteconfig",
+            "container.delete_containerremoteconfig",
+            "container.manage_roles_containerremoteconfig",
+        ],
+        "container.containerremoteconfig_viewer": [
+            "container.view_containerremoteconfig",
+        ],
     }
 
 

@@ -23,6 +23,7 @@ from pulpcore.plugin.serializers import (
     NoArtifactContentSerializer,
     RelatedField,
     RemoteSerializer,
+    RemoteConfigSerializer,
     RepositorySerializer,
     RepositorySyncURLSerializer,
     RepositoryVersionRelatedField,
@@ -215,6 +216,12 @@ class ContainerPushRepositorySerializer(RepositorySerializer):
             set(RepositorySerializer.Meta.fields + ("manifest_signing_service",)) - set(["remote"])
         )
         model = models.ContainerPushRepository
+
+
+class ContainerRemoteConfigSerializer(RemoteConfigSerializer):
+    class Meta:
+        fields = RemoteConfigSerializer.Meta.fields
+        model = models.ContainerRemoteConfig
 
 
 class ContainerRemoteSerializer(RemoteSerializer):
