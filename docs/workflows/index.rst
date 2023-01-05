@@ -67,4 +67,5 @@ Managing Signatures
    :maxdepth: 2
 
    sign-images
+   cosign-support
    verify-images

@@ -1,10 +1,18 @@
-from pulp_container.constants import BLOB_CONTENT_TYPE, MEDIA_TYPE, SIGNATURE_TYPE
+from pulp_container.constants import (
+    ALLOWED_ARTIFACT_TYPES,
+    ALLOWED_LAYER_CONTENT_TYPES,
+    BLOB_CONTENT_TYPE,
+    MEDIA_TYPE,
+    OCI_BLOB_MEDIA_TYPE,
+    SIGNATURE_TYPE,
+)
 
 
 def get_descriptor_schema(
     allowed_media_types, additional_properties=None, additional_required=None
 ):
     """Return a concrete descriptor schema for manifests."""
+
     properties = {
         "mediaType": {"type": "string", "enum": allowed_media_types},
         "size": {"type": "number"},
@@ -23,6 +31,7 @@ def get_descriptor_schema(
     return {"type": "object", "properties": properties, "required": required}
 
 
+# TODO can oci list have mix with docker manifests
 OCI_INDEX_SCHEMA = {
     "type": "object",
     "properties": {
@@ -68,19 +77,10 @@ OCI_MANIFEST_SCHEMA = {
             "type": "string",
             "enum": [MEDIA_TYPE.MANIFEST_OCI],
         },
-        "config": get_descriptor_schema([MEDIA_TYPE.CONFIG_BLOB_OCI]),
+        "config": get_descriptor_schema(ALLOWED_ARTIFACT_TYPES),
         "layers": {
             "type": "array",
-            "items": get_descriptor_schema(
-                [
-                    MEDIA_TYPE.REGULAR_BLOB_OCI_TAR,
-                    MEDIA_TYPE.REGULAR_BLOB_OCI_TAR_GZIP,
-                    MEDIA_TYPE.REGULAR_BLOB_OCI_TAR_ZSTD,
-                    MEDIA_TYPE.FOREIGN_BLOB_OCI_TAR,
-                    MEDIA_TYPE.FOREIGN_BLOB_OCI_TAR_GZIP,
-                    MEDIA_TYPE.FOREIGN_BLOB_OCI_TAR_ZSTD,
-                ]
-            ),
+            "items": get_descriptor_schema(ALLOWED_LAYER_CONTENT_TYPES),
         },
     },
     "required": ["schemaVersion", "config", "layers"],
@@ -134,6 +134,8 @@ DOCKER_MANIFEST_LIST_V2_SCHEMA = {
     "required": ["schemaVersion", "mediaType", "manifests"],
 }
 
+# TODO add oci artifacts support
+# TODO check if one can push oci image to dockerhub
 DOCKER_MANIFEST_V2_SCHEMA = {
     "type": "object",
     "properties": {

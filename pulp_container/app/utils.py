@@ -171,6 +171,7 @@ def determine_media_type_from_json(content_data):
     else:
         if config := content_data.get("config"):
             config_media_type = config.get("mediaType")
+            # TODO add here additional config layers
             if config_media_type == MEDIA_TYPE.CONFIG_BLOB_OCI:
                 return MEDIA_TYPE.MANIFEST_OCI
             else:
