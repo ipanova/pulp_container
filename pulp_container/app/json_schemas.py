@@ -31,7 +31,6 @@ def get_descriptor_schema(
     return {"type": "object", "properties": properties, "required": required}
 
 
-# TODO can oci list have mix with docker manifests
 OCI_INDEX_SCHEMA = {
     "type": "object",
     "properties": {
@@ -46,6 +45,8 @@ OCI_INDEX_SCHEMA = {
                 allowed_media_types=[
                     MEDIA_TYPE.MANIFEST_OCI,
                     MEDIA_TYPE.INDEX_OCI,
+                    MEDIA_TYPE.MANIFEST_V2,
+                    MEDIA_TYPE.MANIFEST_LIST,
                 ],
                 additional_properties={
                     "platform": {
@@ -134,8 +135,6 @@ DOCKER_MANIFEST_LIST_V2_SCHEMA = {
     "required": ["schemaVersion", "mediaType", "manifests"],
 }
 
-# TODO add oci artifacts support
-# TODO check if one can push oci image to dockerhub
 DOCKER_MANIFEST_V2_SCHEMA = {
     "type": "object",
     "properties": {

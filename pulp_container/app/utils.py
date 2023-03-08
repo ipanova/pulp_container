@@ -163,16 +163,16 @@ def determine_media_type_from_json(content_data):
         return media_type
     elif manifests := content_data.get("manifests"):
         if len(manifests):
-            if manifests[0].get("mediaType") in (MEDIA_TYPE.MANIFEST_V2, MEDIA_TYPE.MANIFEST_V1):
-                return MEDIA_TYPE.MANIFEST_LIST
-            elif manifests[0].get("mediaType") in (MEDIA_TYPE.MANIFEST_OCI, MEDIA_TYPE.INDEX_OCI):
+            # check if there is at least one oci manifest
+            if set([m["mediaType"] for m in manifests]).intersection(
+                MEDIA_TYPE.MANIFEST_OCI, MEDIA_TYPE.INDEX_OCI
+            ):
                 return MEDIA_TYPE.INDEX_OCI
         return MEDIA_TYPE.MANIFEST_LIST
     else:
         if config := content_data.get("config"):
             config_media_type = config.get("mediaType")
-            # TODO add here additional config layers
-            if config_media_type == MEDIA_TYPE.CONFIG_BLOB_OCI:
+            if config_media_type in ALLOWED_ARTIFACT_TYPES:
                 return MEDIA_TYPE.MANIFEST_OCI
             else:
                 return MEDIA_TYPE.MANIFEST_V2
