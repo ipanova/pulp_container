@@ -957,7 +957,9 @@ class Manifests(RedirectsMixin, ContainerRegistryApiMixin, ViewSet):
         else:
             try:
                 manifest = models.Manifest.objects.get(digest=pk, pk__in=repository_version.content)
-            except models.Manifest.DoesNotExit:
+            except models.Manifest.DoesNotExist:
+                repository = repository.cast()
+
                 if repository.PUSH_ENABLED:
                     # the manifest might be a part of listed manifests currently being uploaded
                     try:
